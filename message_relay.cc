@@ -23,7 +23,6 @@ void* mesg_relay(void* v)
 	  if (global.training && (ld->label != FLT_MAX))
 	    {
 	      ec->eta_round = global.reg->loss->getUpdate(ec->final_prediction, ld->label, vars->eta/pow(vars->t,vars->power_t), ec->total_sum_feat_sq, ps.weight);
-	      cout << "delaying global example" << endl;
 	      delay_global_example(ec,global.num_threads());
 	    }
 	  else

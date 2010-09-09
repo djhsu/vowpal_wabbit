@@ -87,7 +87,6 @@ example* get_delay_example(size_t thread)
       (delay_indices[thread+1+global.num_threads()] 
        != global_index))
     {
-      cout << "getting delayed global example" << endl;
       return return_example(thread+1+global.num_threads());
     }
   else if (delay_indices[thread] != local_index)
