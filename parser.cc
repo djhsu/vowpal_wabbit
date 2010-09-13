@@ -233,7 +233,6 @@ void parse_source_args(po::variables_map& vm, parser* par, bool quiet, size_t pa
 	    }
 
 	  size_t id;
-	  cout << "file descriptor" << endl;
 	  really_read(f, &id, sizeof(id));
 	  if (!global.quiet)
 	    cerr << "id read = " << id << endl;

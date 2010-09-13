@@ -108,12 +108,12 @@ po::variables_map parse_args(int argc, char *argv[], boost::program_options::opt
   
   if (vm.count("backprop")) {
       global.backprop = true;
-      cout << "enabling backprop" << endl;
+      cerr << "enabling backprop" << endl;
   }
   
   if (vm.count("uncorrected")) {
       global.uncorrected = true;
-      cout << "sending uncorrected local predictions only" << endl;
+      cerr << "sending uncorrected local predictions only" << endl;
   }
 
   if (vm.count("version") || argc == 1) {
@@ -132,15 +132,15 @@ po::variables_map parse_args(int argc, char *argv[], boost::program_options::opt
     global.skips = vm["skips"].as<size_t>();
     if(!vm.count("ngram")) 
       {
-	cout << "You can not skip unless ngram is > 1" << endl;
+	cerr << "You can not skip unless ngram is > 1" << endl;
 	exit(1);
       }
-    cout << "You have chosen to generate " << global.skips << "-skip-" << global.ngram << "-grams" << endl;
+    cerr << "You have chosen to generate " << global.skips << "-skip-" << global.ngram << "-grams" << endl;
     if(global.skips > 4)
       {
-      cout << "*********************************" << endl;
-      cout << "Generating these features might take quite some time" << endl;
-      cout << "*********************************" << endl;
+      cerr << "*********************************" << endl;
+      cerr << "Generating these features might take quite some time" << endl;
+      cerr << "*********************************" << endl;
       }
     }
   if (vm.count("bit_precision"))
