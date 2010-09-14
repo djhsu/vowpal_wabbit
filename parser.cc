@@ -494,6 +494,7 @@ void setup_example(parser* p, example* ae)
   ae->threads_to_finish = num_threads;	
   ae->done = false;
   ae->example_counter = ++example_count;
+  ae->time_stamp = 0.f;
   ae->global_weight = p->lp->get_weight(ae->ld);
 
   if (!ae->sorted && global.thread_bits > 0)

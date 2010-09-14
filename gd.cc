@@ -115,7 +115,7 @@ void output_and_account_example(example* ec)
   global.sum_loss += ec->loss;
   global.sum_loss_since_last_dump += ec->loss;
   
-  global.print(global.raw_prediction, ec->partial_prediction, -1, ec->tag);
+  global.print(global.raw_prediction, ec->partial_prediction, -1, ec->time_stamp, ec->tag);
   
   for (size_t i = 0; i<global.final_prediction_sink.index(); i++)
     {
@@ -126,7 +126,7 @@ void output_and_account_example(example* ec)
       } else {
 	w = 0.;
       }
-      global.print(f, ec->final_prediction, w*ec->global_weight, ec->tag);
+      global.print(f, ec->final_prediction, w*ec->global_weight, ec->time_stamp, ec->tag);
     }
 
   print_update(ec);
@@ -218,7 +218,7 @@ void print_offset_features(regressor &reg, example* &ec, size_t offset)
 
 void print_audit_features(regressor &reg, example* ec, size_t offset)
 {
-  print_result(fileno(stdout),ec->final_prediction,-1,ec->tag);
+  print_result(fileno(stdout),ec->final_prediction,-1,-1,ec->tag);
   print_offset_features(reg, ec, offset);
 }
 
@@ -313,8 +313,9 @@ void local_predict(example* ec, size_t num_threads, gd_vars& vars, regressor& re
     {
       ec->loss = reg.loss->getLoss(ec->final_prediction, ld->label) * ld->weight;
       vars.t += ld->weight;
+      ec->time_stamp = vars.t;
 
-      ec->eta_round = reg.loss->getUpdate(ec->final_prediction, ld->label, vars.eta/pow(vars.t,vars.power_t), ec->total_sum_feat_sq, ld->weight);
+      ec->eta_round = reg.loss->getUpdate(ec->final_prediction, ld->label, vars.eta/pow(ec->time_stamp,vars.power_t), ec->total_sum_feat_sq, ld->weight);
     }
 
   if (global.local_prediction > 0)

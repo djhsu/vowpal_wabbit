@@ -46,7 +46,7 @@ struct global_data {
   int local_prediction;  //file descriptor to send local prediction to.
   size_t unique_id; //unique id for each node in the network, id == 0 means extra io.
 
-  void (*print)(int,float,float,v_array<char>);
+  void (*print)(int,float,float,float,v_array<char>);
   loss_function* loss;
 
   char* program_name;
@@ -66,8 +66,8 @@ struct global_data {
 extern pthread_mutex_t io;
 extern global_data global;
 extern void (*set_minmax)(double label);
-void print_result(int f, float res, float weight, v_array<char> tag);
-void binary_print_result(int f, float res, float weight, v_array<char> tag);
+void print_result(int f, float res, float weight, float ts, v_array<char> tag);
+void binary_print_result(int f, float res, float weight, float ts, v_array<char> tag);
 void noop_mm(double label);
 
 const size_t ring_size = 1 << 11;

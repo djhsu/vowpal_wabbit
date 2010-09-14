@@ -7,16 +7,16 @@
 global_data global;
 string version = "4.1";
 
-void binary_print_result(int f, float res, float weight, v_array<char> tag)
+void binary_print_result(int f, float res, float weight, float ts, v_array<char> tag)
 {
   if (f >= 0)
     {
-      global_prediction ps = {res, weight};
+      global_prediction ps = {res, weight, ts};
       send_global_prediction(f, ps);
     }
 }
 
-void print_result(int f, float res, float weight, v_array<char> tag)
+void print_result(int f, float res, float weight, float ts, v_array<char> tag)
 {
   if (f >= 0)
     {

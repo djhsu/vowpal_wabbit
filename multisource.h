@@ -12,6 +12,7 @@ struct prediction {
 struct global_prediction {
   float p;
   float weight;
+  float ts;
 };
 
 const size_t multindex = 5;
