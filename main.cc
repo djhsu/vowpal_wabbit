@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
 		  cerr << endl << "best constant's loss = " << constant_loss;
 		cerr << endl << "total feature number = " << global.total_features;
 		cerr << endl;
+		cout << endl << global.queries << " total queries" << endl;
 	}
 
 	free(vars);

@@ -368,12 +368,45 @@ void train(weight* weights, const v_array<feature> &features, float update)
       weights[j->weight_index] += update * j->x;
 }
 
+float get_active_coin_bias(float k, float g, float c0)
+{
+  const float c1=1,c2=1;
+  float a,b,sb,rs;
+  b=c0*(log(k+1)+0.0001)/(k+0.0001);
+  sb=sqrt(b);
+  //  cout << (sb+b)/g << endl;
+  if (g<=sb+b)
+    return 1;
+  a=g+b*(c2-1)+sb*(c1-1);
+  rs=(c1+sqrt(c1*c1+4*a*c2))/(2*a);
+  return b*rs*rs;
+}
+
 void local_predict(example* ec, gd_vars& vars, regressor& reg)
 {
   label_data* ld = (label_data*)ec->ld;
 
   ec->final_prediction = 
     finalize_prediction(ec->partial_prediction);
+
+  if(global.active_simulation){
+    //first treat the example as unlabeled
+    float revert_weight = reg.loss->getRevertingWeight(ec->final_prediction, global.eta/pow(ec->example_t,vars.power_t));
+    //    cout << "rw:" << revert_weight << "\tgap:"<< revert_weight/ec->example_t;
+    float bias=get_active_coin_bias(ec->example_t, revert_weight/ec->example_t, global.active_c0);
+    //flip a coin
+    if(drand48()<bias){
+      //coin came up heads: query the label with importance weight 1/bias
+      global.queries += 1;
+      ld->weight/=bias;
+    }
+    else {
+      //do not query => do not train
+      // cout << " skipping "; 
+      ld->label = FLT_MAX;
+    }
+    //    cout << endl;
+  }
 
   if (ld->label != FLT_MAX)
     {
