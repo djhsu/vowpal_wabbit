@@ -370,15 +370,15 @@ void train(weight* weights, const v_array<feature> &features, float update)
 
 float get_active_coin_bias(float k, float g, float c0)
 {
-  const float c1=1,c2=1;
-  float a,b,sb,rs;
+  float b,sb,rs;
   b=c0*(log(k+1)+0.0001)/(k+0.0001);
   sb=sqrt(b);
-  //  cout << (sb+b)/g << endl;
-  if (g<=sb+b)
+  float l=global.sum_loss/global.weighted_examples;
+  if (l > 1.0) { l = 1.0; } else if (l < 0.0) { l = 0.0; } // XXX loss should be in [0,1]
+  float sl = sqrt(l) + sqrt(l+g);
+  if (g<=sb*sl+b)
     return 1;
-  a=g+b*(c2-1)+sb*(c1-1);
-  rs=(c1+sqrt(c1*c1+4*a*c2))/(2*a);
+  rs = (sl+sqrt(sl*sl+4*g))/(2*g);
   return b*rs*rs;
 }
 
