@@ -92,14 +92,15 @@ void print_update(example *ec)
   if (global.weighted_examples > global.dump_interval && !global.quiet)
     {
       label_data* ld = (label_data*) ec->ld;
-      fprintf(stderr, "%-10.6f %-10.6f %8lld %8.1f   %8.4f %8.4f %8lu\n",
+      fprintf(stderr, "%-10.6f %-10.6f %8lld %8.1f   %8.4f %8.4f %8lu %lu\n",
 	      global.sum_loss/global.weighted_examples,
 	      global.sum_loss_since_last_dump / (global.weighted_examples - global.old_weighted_examples),
 	      global.example_number,
 	      global.weighted_examples,
 	      ld->label,
 	      ec->final_prediction,
-	      (long unsigned int)ec->num_features);
+	      (long unsigned int)ec->num_features,
+              global.queries);
       
       global.sum_loss_since_last_dump = 0.0;
       global.old_weighted_examples = global.weighted_examples;
@@ -368,12 +369,11 @@ void train(weight* weights, const v_array<feature> &features, float update)
       weights[j->weight_index] += update * j->x;
 }
 
-float get_active_coin_bias(float k, float g, float c0)
+float get_active_coin_bias(float k, float l, float g, float c0)
 {
   float b,sb,rs;
   b=c0*(log(k+1)+0.0001)/(k+0.0001);
   sb=sqrt(b);
-  float l=global.sum_loss/global.weighted_examples;
   if (l > 1.0) { l = 1.0; } else if (l < 0.0) { l = 0.0; } // XXX loss should be in [0,1]
   float sl = sqrt(l) + sqrt(l+g);
   if (g<=sb*sl+b)
@@ -393,7 +393,14 @@ void local_predict(example* ec, gd_vars& vars, regressor& reg)
     //first treat the example as unlabeled
     float revert_weight = reg.loss->getRevertingWeight(ec->final_prediction, global.eta/pow(ec->example_t,vars.power_t));
     //    cout << "rw:" << revert_weight << "\tgap:"<< revert_weight/ec->example_t;
-    float bias=get_active_coin_bias(ec->example_t, revert_weight/ec->example_t, global.active_c0);
+    float k = ec->example_t - ld->weight;
+    float bias;
+    if (k <= 0.)
+      bias = 1.;
+    else {
+      float avg_loss = global.sum_loss / k;
+      bias=get_active_coin_bias(k, avg_loss, revert_weight / k, global.active_c0);
+    }
     //flip a coin
     if(drand48()<bias){
       //coin came up heads: query the label with importance weight 1/bias
