@@ -394,13 +394,7 @@ void local_predict(example* ec, gd_vars& vars, regressor& reg)
     float revert_weight = reg.loss->getRevertingWeight(ec->final_prediction, global.eta/pow(ec->example_t,vars.power_t));
     //    cout << "rw:" << revert_weight << "\tgap:"<< revert_weight/ec->example_t;
     float k = ec->example_t - ld->weight;
-    float bias;
-    if (k <= 0.)
-      bias = 1.;
-    else {
-      float avg_loss = global.sum_loss / k;
-      bias=get_active_coin_bias(k, avg_loss, revert_weight / k, global.active_c0);
-    }
+    float bias = (k <= 0.) ? 1.  : get_active_coin_bias(k, global.sum_loss / k, revert_weight / k, global.active_c0);
     //flip a coin
     if(drand48()<bias){
       //coin came up heads: query the label with importance weight 1/bias
