@@ -1,6 +1,7 @@
 #ifndef EX_H
 #define EX_H
 
+#include <pthread.h>
 #include <stdint.h>
 #include "v_array.h"
 
